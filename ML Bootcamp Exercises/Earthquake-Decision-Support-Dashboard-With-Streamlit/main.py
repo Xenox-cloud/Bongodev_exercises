@@ -315,8 +315,9 @@ if uploaded_file is not None:
 
     # Data Export
     with st.expander("Full Dataset & Export"):
-        display_cols = ['time', 'place', 'magnitude', 'depth', 'risk_level', 'tectonic_type', 'cluster_flag','energy_joules', 'seismic_moment']
+        display_cols = ['time', 'place', 'magnitude', 'depth', 'risk_level', 'tectonic_type', 'cluster_flag']
         st.dataframe(filter_df[display_cols].sort_values('time', ascending=False))
         csv = filter_df[display_cols].to_csv(index=False)
 
         st.download_button("Download Filtered Data", csv, "filtered_earthquakes.csv", "text/csv")
+
