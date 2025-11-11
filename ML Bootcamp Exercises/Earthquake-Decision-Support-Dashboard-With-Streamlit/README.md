@@ -14,6 +14,7 @@ This project is an interactive dashboard for **earthquake monitoring and decisio
   - Hourly event counts
   - Daily event trends
   - Magnitude over time
+  - Energy Released Over Time
 - **Hazard Mapping**: Interactive map of earthquake locations with magnitude visualization.
 - **Aftershock Clusters**: Detects events within 24h and 50 km of previous events; shows map and cluster summary.
 - **Decision Support**: Recommended actions based on recent seismic activity.
@@ -43,3 +44,4 @@ The CSV contains:
 
 ```bash
 pip install streamlit pandas numpy plotly scikit-learn
+
