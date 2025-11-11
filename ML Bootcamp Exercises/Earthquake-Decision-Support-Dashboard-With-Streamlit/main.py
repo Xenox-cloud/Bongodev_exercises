@@ -89,6 +89,11 @@ def load_and_process_data(uploaded_file):
     # Group clusters by approximate region and time
     df['cluster_id'] = ((df['hours_since_prev'] > 24) |
                         (df['km_since_prev'] > 50)).cumsum()
+    # 1. Seismic Energy (in Joules)
+    df['energy_joules'] = 10 ** (1.5 * df['magnitude'] + 4.8)
+
+    # 2. Seismic Moment (in Newton-meters)
+    df['seismic_moment'] = 10 ** (1.5 * df['magnitude'] + 9.1)
 
     return df
 
@@ -196,6 +201,12 @@ if uploaded_file is not None:
                 hourly, x='hour', y='count'
             )
             st.plotly_chart(fig_hour, use_container_width=True)
+        with st.expander("Energy Released Over Time"):
+            energy_over_time = filter_df.groupby('date')['energy_joules'].sum().reset_index()
+            fig_energy = px.line(energy_over_time, x='date', y='energy_joules', markers=True,
+                                 title="Total Seismic Energy Released per Day (Joules)")
+            st.plotly_chart(fig_energy, use_container_width=True)
+
 
     with col2:
         with st.expander("Daily Rate"):
@@ -298,10 +309,14 @@ if uploaded_file is not None:
             st.metric("M≥5.0 Events", len(filter_df[filter_df['magnitude'] >= 5.0]))
             st.metric("Deep Events (>300km)", len(filter_df[filter_df['depth'] > 300]))
             st.metric("Active Clusters", len(clusters['cluster_id'].unique()) if len(clusters) > 0 else 0)
+            st.metric("Total Energy Released (J)", f"{filter_df['energy_joules'].sum():.2e}")
+            st.metric("Max Seismic Moment (N·m)", f"{filter_df['seismic_moment'].max():.2e}")
+
 
     # Data Export
     with st.expander("Full Dataset & Export"):
-        display_cols = ['time', 'place', 'magnitude', 'depth', 'risk_level', 'tectonic_type', 'cluster_flag']
+        display_cols = ['time', 'place', 'magnitude', 'depth', 'risk_level', 'tectonic_type', 'cluster_flag','energy_joules', 'seismic_moment']
         st.dataframe(filter_df[display_cols].sort_values('time', ascending=False))
         csv = filter_df[display_cols].to_csv(index=False)
+
         st.download_button("Download Filtered Data", csv, "filtered_earthquakes.csv", "text/csv")
