@@ -20,6 +20,36 @@ st.set_page_config(
     initial_sidebar_state='expanded',
 )
 
+import base64
+
+def get_base64_image(image_path):
+    with open(image_path, "rb") as f:
+        data = f.read()
+    return base64.b64encode(data).decode()
+
+img_base64 = get_base64_image("back_img.jpg")
+img_base64_2 = get_base64_image("back_img2.jpg")
+
+st.markdown(f"""
+<style>
+[data-testid="stAppViewContainer"] {{
+    background-image: url("data:image/jpg;base64,{img_base64}");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+}}
+[data-testid="stSidebar"] {{
+    background-image: url("data:image/jpg;base64,{img_base64_2}");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: left;
+    # background-attachment: fixed;
+}}
+
+</style>
+""", unsafe_allow_html=True)
+
 # Add a page title
 st.title('Earthquake Decision Support Dashboard')
 st.markdown(
@@ -320,4 +350,5 @@ if uploaded_file is not None:
         csv = filter_df[display_cols].to_csv(index=False)
 
         st.download_button("Download Filtered Data", csv, "filtered_earthquakes.csv", "text/csv")
+
 
